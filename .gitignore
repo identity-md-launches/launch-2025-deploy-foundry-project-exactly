@@ -1,0 +1,15 @@
+out/
+cache/
+broadcast/
+__pycache__/
+.env
+app/node_modules/
+app/dist/
+broadcast/*/4663/dry-run/
+
+# e2e screenshots
+/app/*.png
+# marketing renders and generated scene data (node marketing/build-data.mjs, marketing/render.mjs)
+marketing/out/
+marketing/data/
+marketing/video/node_modules/
