@@ -182,7 +182,7 @@ contract Handler is Test {
         } else if (kind % 4 == 1) {
             m.fundPot(amount);
         } else if (kind % 4 == 2) {
-            if (block.timestamp >= _deadline()) {
+            if (block.timestamp >= _deadline() || views.roundInfo(m.round()).placed == 0) {
                 vm.stopPrank();
                 return;
             }

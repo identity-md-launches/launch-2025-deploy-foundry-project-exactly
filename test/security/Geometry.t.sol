@@ -13,7 +13,7 @@ contract PackingHarness is IdentityMachine {
         IdentityMachine(
             IERC20(address(0)),
             IBeacon(address(0)),
-            address(0),
+            address(0xD),
             bytes32(0),
             1,
             0

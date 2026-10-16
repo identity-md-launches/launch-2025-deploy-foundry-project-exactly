@@ -50,7 +50,8 @@ beacon). EXPERIMENTAL. Site: https://identitymachine.fun, human docs: ./docs.htm
      build, including proofs, reveals, consumption, plug-pay and clock extensions. The site supplies the witness
      automatically. A later spot may repair an unsafe intermediate state in the same transaction.
    Dry-run first: `check(design, rot, x, y)` returns the part ids its plug-pay would go to (0 = the core,
-   i.e. the pot), or reverts with Occupied / Mismatch / NotPlugged / OutOfBounds / BadRot.
+   i.e. the pot), or reverts with Occupied / Mismatch / NotPlugged / OutOfBounds / BadRot, or RoundOver once
+   the clock has run out.
    `cellAt(round, x, y)` → (occupied, partId, sockets).
 4. Earn:
    - plug-pay: a part carries 50% of its mint price (`parts(id).plug`) until placed, then pays it to the
@@ -66,7 +67,8 @@ beacon). EXPERIMENTAL. Site: https://identitymachine.fun, human docs: ./docs.htm
    unfilled places start the next machine's pot (`RoundEnded(round, pot, prize, carried)`). `reserve()` takes 5% of
    every mint and matches the pot money (15%) of every later mint while it lasts.
    A new machine opens at once and the price starts over. `fundPot(amount)` adds to the running pot,
-   `fundReserve(amount)` to the reserve, `sponsor(amount)` pays the running machine's parts.
+   `fundReserve(amount)` to the reserve, `sponsor(amount)` pays the running machine's parts
+   (it reverts with NothingPlaced until a part is placed).
    The prize order is `leaders(round)`: its last ten placements, most recent first; the round end pays exactly that.
    Per mint: 50% plug-pay, 26% shared, 15% pot (plus the reserve match), 5% reserve, 2% burned, 2% developer.
    Referrals: mintWithReferral(n, maxTotal, referrer), or mintForWithReferral(recipient, n, maxTotal, referrer).

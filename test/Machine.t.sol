@@ -316,9 +316,10 @@ contract MachineTest is Base {
         assertApproxEqAbs(m.earned(a), 3 ether, 1);
     }
 
-    function test_sponsorBeforeAnyPartGoesToThePot() public {
+    function test_sponsorBeforeAnyPartReverts() public {
+        vm.expectRevert(IdentityMachine.NothingPlaced.selector);
         m.sponsor(3 ether);
-        assertEq(_round().pot, 3 ether);
+        assertEq(_round().pot, 0);
     }
 
     function test_payDev() public {

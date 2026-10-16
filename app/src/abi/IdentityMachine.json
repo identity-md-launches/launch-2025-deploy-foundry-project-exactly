@@ -1628,6 +1628,11 @@
   },
   {
     "type": "error",
+    "name": "BadConfig",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "BadDelay",
     "inputs": []
   },
@@ -1684,6 +1689,11 @@
   {
     "type": "error",
     "name": "NotStarted",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NothingPlaced",
     "inputs": []
   },
   {

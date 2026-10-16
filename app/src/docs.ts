@@ -105,14 +105,14 @@ const groups: [string, [string, string, string][]][] = [
       <h3>The next jackpot</h3>
       <p>The other ${pct(10000 - WIN)}, plus any empty places, starts the next round's jackpot, so a new round never opens empty.</p>
       <h3>The reserve</h3>
-      <p>The reserve takes ${pct(SPLIT.reserve)} of every purchase. While it lasts, it matches every IMD that goes into a jackpot, so jackpots grow twice as fast.</p>`],
+      <p>The reserve takes ${pct(SPLIT.reserve)} of every purchase. While it lasts, it matches the IMD that goes into the jackpot from each purchase, so jackpots grow faster.</p>`],
   ]],
   ["Economy", [
     ["split", "Where your IMD goes", `
       <p>Every purchase is split the same way:</p>
       <table class="tbl"><tbody>${split}</tbody></table>
       <p>If the buyer came through a referral link, ${pct(REFERRAL)} of the price moves from shared to the referrer.</p>
-      <p class="muted">Anyone can also sponsor the builders with <code>sponsor(amount)</code>: the IMD is split across the running machine's parts by rarity.</p>`],
+      <p class="muted">Once a part is placed, anyone can also sponsor the builders with <code>sponsor(amount)</code>: the IMD is split across the running machine's parts by rarity.</p>`],
     ["parts", "Parts and odds", `
       <p>A part rolls a rarity, then a shape, then a design. The odds are the same for everyone, every time. See every part on the <a href="./parts.html${q}">Parts</a> page.</p>
       <div class="tbl-wrap"><table class="tbl odds"><thead><tr><th>Rarity</th><th>Chance</th><th>Share</th><th>Designs</th></tr></thead><tbody>${odds}</tbody></table></div>

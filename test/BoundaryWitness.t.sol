@@ -12,7 +12,7 @@ import {IBeacon} from "../src/DrandBeacon.sol";
 
 /// TEST ONLY: inject remote-edge states to exercise coordinate limits without growing 100,000 cells.
 contract BoundaryFixtureMachine is IdentityMachine {
-    constructor(IERC20 token, IBeacon random) IdentityMachine(token, random, address(0), bytes32(0), .1 ether, 0) {}
+    constructor(IERC20 token, IBeacon random) IdentityMachine(token, random, address(0xD), bytes32(0), .1 ether, 0) {}
     function fixture(int32 x, int32 y, uint8 mask, int32 minX, int32 minY, int32 maxX, int32 maxY) external {
         cells[_key(1, x, y)] = (1 << 8) | mask;
         Round storage R = rounds[1];

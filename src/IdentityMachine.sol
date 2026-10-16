@@ -31,10 +31,11 @@ interface IParts {
 ///          rarity weight. A machine's parts stop earning when its round ends; what they earned stays claimable.
 ///   CLOCK  A round starts with 24 hours. Each placement adds 30 seconds (never more than 24 hours on the clock).
 ///   END    A round ends when the clock runs out. Each build must leave an outward boundary socket.
-///          The last ten parts placed share 70% of the pot (30/20/13/10/8/6/5/4/2/2%). The rest of the pot
-///          starts the next machine's pot. The reserve matches every round's pot money mint for mint.
+///          The last ten parts placed share 70% of the pot (30/20/13/10/8/6/5/4/2/2%). The rest of the pot,
+///          including the share of any place left empty, starts the next machine's pot. The reserve matches each
+///          mint's pot money while it lasts.
 ///
-///   Each mint: 50% plug-pay, 26% every placed part, 15% round pot (matched by the reserve), 5% reserve,
+///   Each mint: 50% plug-pay, 26% every placed part, 15% round pot (matched by the reserve while it lasts), 5% reserve,
 ///              2% burned, 2% developer
 contract IdentityMachine {
     using SafeERC20 for IERC20;
@@ -176,6 +177,8 @@ contract IdentityMachine {
     error BadBuildSize();
     error NoGrowthExit();
     error BadDelay();
+    error BadConfig();
+    error NothingPlaced();
 
     constructor(
         IERC20 imd_,
@@ -186,6 +189,7 @@ contract IdentityMachine {
         uint256 delay_ // seconds from deployment until minting opens: the launch countdown
     ) {
         if (delay_ > 30 days) revert BadDelay();
+        if (dev_ == address(0) || basePrice_ == 0) revert BadConfig();
         imd = imd_;
         beacon = beacon_;
         inventory = IParts(address(new Parts(address(this)))); // created here, so only this machine can issue items
@@ -248,7 +252,7 @@ contract IdentityMachine {
 
     // ================================================================== mint
 
-    /// @notice Mint `n` parts (at most 200). Each is revealed by a drand round about 15 seconds later.
+    /// @notice Mint `n` parts (at most 200). Each is revealed by a drand round 9 to 12 seconds later.
     function mint(uint256 n, uint256 maxTotal) external returns (uint256 firstId, uint256 total) {
         return _mint(msg.sender, n, maxTotal, address(0));
     }
@@ -493,8 +497,10 @@ contract IdentityMachine {
     }
 
     /// @notice Would catalog part `design` fit the running machine at (rot, x, y)? Reverts with the reason if not,
-    ///         else returns the parts its plug-pay would go to (0 = the core). For agents and UIs.
+    ///         else returns the parts its plug-pay would go to (0 = the core). For agents and UIs. Once the clock
+    ///         has run out nothing more can be placed on this machine, so it reverts RoundOver, as build does.
     function check(uint16 design, uint8 rot, int32 x, int32 y) external view returns (uint256[] memory payees) {
+        if (!_live()) revert RoundOver();
         if (rot > 3) revert BadRot();
         (uint8 n, int32[9] memory cx, int32[9] memory cy, uint8[9] memory m) =
             Shapes.footprint(Catalog.tmplOf(design), rot, x, y);
@@ -547,8 +553,10 @@ contract IdentityMachine {
     }
 
     /// @notice Anyone can sponsor the builders: IMD paid straight to every part of the running machine, by weight.
+    ///         Reverts while the running machine has no parts placed (fundPot adds to its pot instead).
     function sponsor(uint256 amount) external {
         if (!_live()) revert RoundOver();
+        if (rounds[round].totalWeight == 0) revert NothingPlaced();
         imd.safeTransferFrom(msg.sender, address(this), amount);
         _distribute(rounds[round], amount);
         emit Sponsored(msg.sender, round, amount);
@@ -585,8 +593,8 @@ contract IdentityMachine {
         (R.minX, R.minY, R.maxX, R.maxY) = (-1, -1, 1, 1);
     }
 
-    /// @dev Ends the running round: the last ten parts placed share 70% of the pot, and the rest starts the next
-    ///      machine's pot, which opens at once. No external calls.
+    /// @dev Ends the running round: the last ten parts placed share 70% of the pot, and the rest (with the share of
+    ///      any place left empty) starts the next machine's pot, which opens at once. No external calls.
     function _endRound() internal {
         uint256 r = round;
         Round storage R = rounds[r];
