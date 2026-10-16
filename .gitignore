@@ -1,4 +1,7 @@
 out/
+!/art/out/
+/art/out/*
+!/art/out/templates.json
 cache/
 broadcast/
 __pycache__/
