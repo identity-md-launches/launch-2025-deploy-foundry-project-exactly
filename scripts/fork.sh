@@ -52,7 +52,7 @@ if [ -n "${SWARM:-}" ]; then
   RPC=$RPC node app/scripts/swarm-deploy.mjs $OWNER ${SWARM_DELAY:-0} > /tmp/machine-fork-record.json
   DELAY=${SWARM_DELAY:-0} RPC=$RPC node app/scripts/swarm-manifest.mjs /tmp/machine-fork-record.json app/public/deploy.fork.json --check --dev $OWNER
 else
-(DELAY=0 MANIFEST_PATH=app/public/deploy.fork.json forge script script/Deploy.s.sol \
+(DELAY=0 MANIFEST_PATH=app/public/deploy.fork.json FOUNDRY_PROFILE=deploy forge script script/Deploy.s.sol \
   --rpc-url $RPC --broadcast --private-key $PK0 --slow > /tmp/machine-fork-deploy.log 2>&1) \
   || { tail -30 /tmp/machine-fork-deploy.log; exit 1; }
 fi

@@ -7,7 +7,7 @@ optimizer = true
 optimizer_runs = 200
 via_ir = true
 bytecode_hash = "none"
-fs_permissions = [{ access = "read-write", path = "app/public" }, { access = "read-write", path = "./out" }, { access = "read", path = "./test" }, { access = "read", path = "./launch.json" }, { access = "read", path = "art/out" }]
+fs_permissions = [{ access = "read", path = "./out" }, { access = "read", path = "./test" }, { access = "read", path = "./launch.json" }, { access = "read", path = "art/out" }]
 
 [fuzz]
 runs = 512
@@ -22,6 +22,11 @@ robinhood = "https://rpc.mainnet.chain.robinhood.com"
 
 [lint]
 lint_on_build = false
+
+# Local deploy scripts (scripts/dev.sh, scripts/fork.sh) write the site's deployment manifest; the default profile
+# only reads, as swarm workers require.
+[profile.deploy]
+fs_permissions = [{ access = "read-write", path = "app/public" }, { access = "read", path = "./out" }, { access = "read", path = "./test" }, { access = "read", path = "./launch.json" }, { access = "read", path = "art/out" }]
 
 [profile.fork]
 ffi = true

@@ -10,7 +10,7 @@ if ! cast chain-id --rpc-url $RPC >/dev/null 2>&1; then
   echo "anvil pid $!"
   for i in $(seq 30); do cast chain-id --rpc-url $RPC >/dev/null 2>&1 && break; sleep 0.5; done
 fi
-(forge script script/DevDeploy.s.sol --rpc-url $RPC --broadcast --slow >/tmp/machine-deploy.log 2>&1) || { cat /tmp/machine-deploy.log; exit 1; }
+(FOUNDRY_PROFILE=deploy forge script script/DevDeploy.s.sol --rpc-url $RPC --broadcast --slow >/tmp/machine-deploy.log 2>&1) || { cat /tmp/machine-deploy.log; exit 1; }
 IMD=$(python3 -c "import json;print(json.load(open('app/public/deploy.local.json'))['imd'])")
 PK0=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 for i in $(seq 0 9); do
